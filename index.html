@@ -148,34 +148,34 @@ tr:hover td{background:#f4f6f0}
   <label>Entreprise<input name="co" required placeholder="Ex. Boulangerie La Mie"></label>
   <label>Objet<input name="ti" required placeholder="Ex. Kit solaire 3 kVA"></label>
   <label>Contact<input name="nom" required placeholder="Prénom Nom"></label>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label>Montant (FCFA)<input name="amt" type="number" min="0" step="1000" required value="1500000"></label><label>Ville<select name="ville"><option>Yaoundé</option><option>Douala</option><option>Bafoussam</option><option>Kribi</option><option>Garoua</option></select></label></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label>Montant (€)<input name="amt" type="number" min="0" step="100" required value="2500"></label><label>Ville<select name="ville"><option>Yaoundé</option><option>Douala</option><option>Bafoussam</option><option>Kribi</option><option>Garoua</option></select></label></div>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="nfc">Annuler</button><button class="btn p">Créer l'affaire</button></div></form></div>
 <div class="toast" id="toast"></div>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ST=[{k:'pro',n:'Prospect',p:.1},{k:'qua',n:'Qualifié',p:.3},{k:'dev',n:'Devis envoyé',p:.5},{k:'neg',n:'Négociation',p:.75},{k:'gag',n:'Gagné',p:1}];
 const OWN={AM:['Awa Mbarga','#c0632b'],JN:['Jules Ndzana','#3c6e9f'],SK:['Sali Kamga','#7a4fa0']};
-const fcfa=n=>Math.round(n).toLocaleString('fr-FR').replace(/ /g,' ')+' F';
-const court=n=>n>=1e6?(n/1e6).toLocaleString('fr-FR',{maximumFractionDigits:1})+' M':Math.round(n/1e3)+' k';
+const fcfa=n=>Math.round(n).toLocaleString('fr-FR').replace(/ /g,' ')+' €';
+const court=n=>n>=1e6?(n/1e6).toLocaleString('fr-FR',{maximumFractionDigits:1})+' M':n>=1e4?Math.round(n/1e3)+' k':Math.round(n).toLocaleString('fr-FR').replace(/ /g,' ');
 const J=864e5,T0=new Date();T0.setHours(0,0,0,0);const d=n=>T0.getTime()+n*J;
 const fd=t=>{const n=Math.round((t-T0)/J);return n===0?"aujourd'hui":n===1?'demain':n===-1?'hier':n<0?`il y a ${-n} j`:`dans ${n} j`};
 const fdate=t=>new Date(t).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
 function seed(){const S=[
- ['Hôtel Les Cocotiers','Toiture solaire 30 kVA','Paul Etoundi','Kribi',38500000,'neg','AM',-1,['hôtellerie'],45],
- ['Clinique Mfoundi','Onduleurs et batteries bloc op.','Dr Ngo Biyong','Yaoundé',21400000,'dev','JN',2,['santé'],30],
- ['Boulangerie La Mie','Kit solaire 5 kVA','Ernest Fotso','Bafoussam',6900000,'qua','SK',0,['commerce'],20],
- ['Lycée bilingue d\'Etoug-Ebe','Éclairage salles et forage','Mme Abena','Yaoundé',14200000,'pro','AM',4,['éducation'],60],
- ['Ferme avicole Nkolo','Pompage solaire','Joseph Nkolo','Garoua',4800000,'qua','JN',-3,['agriculture'],25],
- ['Cabinet Eyenga & Associés','Kit bureau 3 kVA','Me Eyenga','Douala',3600000,'neg','SK',1,['services'],12],
- ['Supermarché Akwa Plus','Chambres froides solaires','Rita Tchamba','Douala',27800000,'dev','AM',-2,['commerce'],38],
- ['Paroisse Saint-Joseph','Éclairage et sonorisation','Abbé Mvondo','Yaoundé',2900000,'pro','JN',6,['associatif'],50],
- ['Station Total Mvan','Audit énergétique','Henri Bella','Yaoundé',1200000,'gag','SK',0,['énergie'],-6],
- ['Imprimerie Lumière','Kit 8 kVA + maintenance','Brice Kouam','Douala',9800000,'gag','AM',0,['industrie'],-18],
- ['Résidence Bastos','Lampadaires solaires (24)','Claire Owona','Yaoundé',11500000,'neg','JN',3,['immobilier'],22],
- ['Pharmacie du Marché','Réfrigérateur vaccins solaire','Dr Fouda','Kribi',2300000,'pro','SK',-1,['santé'],40],
- ['École Les Petits Génies','Kit 2 kVA','M. Tabi','Bafoussam',1900000,'qua','AM',5,['éducation'],35],
+ ['Hôtel Les Cocotiers','Toiture solaire 30 kVA','Paul Etoundi','Kribi',58500,'neg','AM',-1,['hôtellerie'],45],
+ ['Clinique Mfoundi','Onduleurs et batteries bloc op.','Dr Ngo Biyong','Yaoundé',32500,'dev','JN',2,['santé'],30],
+ ['Boulangerie La Mie','Kit solaire 5 kVA','Ernest Fotso','Bafoussam',10500,'qua','SK',0,['commerce'],20],
+ ['Lycée bilingue d\'Etoug-Ebe','Éclairage salles et forage','Mme Abena','Yaoundé',21500,'pro','AM',4,['éducation'],60],
+ ['Ferme avicole Nkolo','Pompage solaire','Joseph Nkolo','Garoua',7500,'qua','JN',-3,['agriculture'],25],
+ ['Cabinet Eyenga & Associés','Kit bureau 3 kVA','Me Eyenga','Douala',5500,'neg','SK',1,['services'],12],
+ ['Supermarché Akwa Plus','Chambres froides solaires','Rita Tchamba','Douala',42500,'dev','AM',-2,['commerce'],38],
+ ['Paroisse Saint-Joseph','Éclairage et sonorisation','Abbé Mvondo','Yaoundé',4400,'pro','JN',6,['associatif'],50],
+ ['Station Total Mvan','Audit énergétique','Henri Bella','Yaoundé',1800,'gag','SK',0,['énergie'],-6],
+ ['Imprimerie Lumière','Kit 8 kVA + maintenance','Brice Kouam','Douala',15000,'gag','AM',0,['industrie'],-18],
+ ['Résidence Bastos','Lampadaires solaires (24)','Claire Owona','Yaoundé',17500,'neg','JN',3,['immobilier'],22],
+ ['Pharmacie du Marché','Réfrigérateur vaccins solaire','Dr Fouda','Kribi',3500,'pro','SK',-1,['santé'],40],
+ ['École Les Petits Génies','Kit 2 kVA','M. Tabi','Bafoussam',2900,'qua','AM',5,['éducation'],35],
 ];
- const deals=S.map((s,i)=>({id:'D'+(101+i),co:s[0],ti:s[1],nom:s[2],ville:s[3],amt:s[4],st:s[5],own:s[6],next:d(s[7]),tags:s[8],close:d(s[9]),tel:'+237 6'+(70+i*2)+' '+(10+i*7)%90+' '+(23+i*5)%90+' '+(40+i*3)%90,
+ const deals=S.map((s,i)=>({id:'D'+(101+i),co:s[0],ti:s[1],nom:s[2],ville:s[3],amt:s[4],st:s[5],own:s[6],next:d(s[7]),tags:s[8],close:d(s[9]),tel:'+33 6 '+(70+i*2)+' '+(10+i*7)%90+' '+(23+i*5)%90+' '+(40+i*3)%90,
   ev:[{t:d(-12-i%5),k:'Appel',x:'Premier contact, besoin identifié.'},{t:d(-4-i%3),k:'Visite',x:'Relevé sur site et photos de la toiture.'}]}));
  deals.forEach(x=>{if(x.st==='gag'){x.ev.push({t:x.close,k:'Gagné',x:'Bon de commande signé.'})}});
  return {deals,lost:1,tasksDone:[]};
@@ -185,8 +185,8 @@ const save=()=>{try{localStorage.setItem('filao',JSON.stringify(S))}catch(e){}};
 const stI=k=>ST.findIndex(s=>s.k===k);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),2200)}
 function kpis(){const open=S.deals.filter(x=>x.st!=='gag'),won=S.deals.filter(x=>x.st==='gag');
- $('#k1').textContent=court(open.reduce((a,x)=>a+x.amt,0))+' FCFA';$('#k1s').textContent=open.length+' affaires en cours';
- $('#k2').textContent=court(open.reduce((a,x)=>a+x.amt*ST[stI(x.st)].p,0))+' FCFA';
+ $('#k1').textContent=court(open.reduce((a,x)=>a+x.amt,0))+' €';$('#k1s').textContent=open.length+' affaires en cours';
+ $('#k2').textContent=court(open.reduce((a,x)=>a+x.amt*ST[stI(x.st)].p,0))+' €';
  $('#k3').textContent=Math.round(won.length/(won.length+S.lost)*100)+' %';$('#k3s').textContent=`${won.length} gagnées, ${S.lost} perdue${S.lost>1?'s':''}`;
  const late=open.filter(x=>x.next<T0.getTime()).length;$('#k4').textContent=late;$('#k4').style.color=late?'var(--warn)':'';$('#nbR').textContent=open.filter(x=>x.next<=T0.getTime()).length}
 function cardHTML(x){const n=Math.round((x.next-T0)/J),cl=x.st==='gag'?'':n<0?'late':n===0?'today':'';
@@ -262,7 +262,7 @@ function view(v){$$('aside button[data-v]').forEach(b=>b.classList.toggle('on',b
 $$('aside button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));window.__vue=view;
 $('#add').onclick=()=>{$('#md').classList.add('on');$('#nf [name=co]').focus()};$('#nfc').onclick=()=>$('#md').classList.remove('on');
 $('#nf').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),n=Math.max(...S.deals.map(x=>+x.id.slice(1)))+1;
- S.deals.push({id:'D'+n,co:f.get('co'),ti:f.get('ti'),nom:f.get('nom'),ville:f.get('ville'),amt:+f.get('amt'),st:'pro',own:'AM',next:d(1),close:d(45),tags:['nouveau'],tel:'+237 6·· ·· ·· ··',ev:[{t:Date.now(),k:'Création',x:'Affaire créée.'}]});
+ S.deals.push({id:'D'+n,co:f.get('co'),ti:f.get('ti'),nom:f.get('nom'),ville:f.get('ville'),amt:+f.get('amt'),st:'pro',own:'AM',next:d(1),close:d(45),tags:['nouveau'],tel:'+33 6 ·· ·· ·· ··',ev:[{t:Date.now(),k:'Création',x:'Affaire créée.'}]});
  save();board();e.target.reset();$('#md').classList.remove('on');view('pipe');toast('Affaire créée dans « Prospect »')};
 $('#reset').onclick=()=>{S=seed();save();board();view('pipe');toast('Données de démonstration restaurées')};
 board();
