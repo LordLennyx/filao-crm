@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filao — CRM et pipeline commercial</title>
+<meta name="description" content="Filao, CRM pour PME : pipeline commercial par glisser-déposer, fiches contacts, historique des échanges, relances et prévisions de chiffre d'affaires.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f4d3a'/%3E%3Cpath d='M9 23 16 8l7 15' stroke='%23e9f0e4' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#eef0ea;--paper:#fbfcf8;--ink:#17201b;--mute:#6b746d;--line:#d9ddd3;--acc:#1f4d3a;--acc2:#d6f06b;--warn:#b5471b;--ok:#2f7d4f}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.45 'Bricolage Grotesque',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{background:var(--acc);color:#e9f0e4;padding:22px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:21px;margin:0 6px 26px}
+.logo svg{width:28px;height:28px}
+aside button{display:flex;justify-content:space-between;align-items:center;background:none;border:0;text-align:left;padding:10px 12px;border-radius:8px;font-weight:600;font-size:14.5px;opacity:.72}
+aside button:hover{opacity:1;background:#ffffff12}
+aside button.on{opacity:1;background:#ffffff1c}
+aside button b{background:var(--acc2);color:var(--acc);font-size:11px;border-radius:20px;padding:1px 7px}
+.who{margin-top:auto;display:flex;gap:10px;align-items:center;font-size:13px;padding:10px 6px;border-top:1px solid #ffffff22}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;color:#fff}
+main{padding:22px 28px 40px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.top h1{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.top .r{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:9px 14px;font-weight:600}
+.btn:hover{border-color:var(--ink)}
+.btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi span{color:var(--mute);font-size:12.5px}
+.kpi b{display:block;font-size:26px;letter-spacing:-.02em;margin-top:2px;font-weight:700}
+.kpi small{color:var(--mute)}
+/* pipeline */
+.board{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:#e3e7de;border-radius:12px;padding:10px;min-height:420px;transition:background .15s}
+.col.over{background:#d6ddcc;outline:2px dashed var(--acc);outline-offset:-2px}
+.col h3{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;padding:4px 4px 10px}
+.col h3 i{font-style:normal;color:var(--mute);font-weight:400}
+.col .sum{padding:0 4px 10px;color:var(--mute)}
+.col .bar{height:3px;border-radius:2px;background:var(--line);margin:0 4px 10px;overflow:hidden}
+.col .bar u{display:block;height:100%;background:var(--acc)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:8px;cursor:grab;transition:box-shadow .15s,transform .15s;position:relative}
+.card:hover{box-shadow:0 6px 18px -8px rgba(23,32,27,.35)}
+.card.drag{opacity:.4}
+.card .co{font-weight:700;font-size:14.5px;padding-right:30px}
+.card .ti{color:var(--mute);font-size:13px;margin:1px 0 9px}
+.card .ft{display:flex;justify-content:space-between;align-items:center}
+.card .amt{font-weight:700}
+.card .av{position:absolute;right:10px;top:10px;width:24px;height:24px;font-size:10px}
+.due{font-size:11.5px;border-radius:5px;padding:2px 6px;background:#eef0ea}
+.due.late{background:#fbe3d6;color:var(--warn)}
+.due.today{background:var(--acc2);color:var(--acc)}
+.tags{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.tag{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:0 7px;color:var(--mute)}
+/* drawer */
+.dr{position:fixed;inset:0;z-index:30;pointer-events:none}
+.dr .veil{position:absolute;inset:0;background:#17201b55;opacity:0;transition:.25s}
+.dr .pan{position:absolute;right:0;top:0;bottom:0;width:min(480px,100%);background:var(--paper);transform:translateX(100%);transition:.35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.dr.on{pointer-events:auto}.dr.on .veil{opacity:1}.dr.on .pan{transform:none}
+.pan .hd{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+.pan .hd h2{font-size:24px;letter-spacing:-.02em}
+.pan .bd{padding:18px 22px;overflow-y:auto;flex:1}
+.x{position:absolute;right:16px;top:16px;border:0;background:#eef0ea;border-radius:50%;width:34px;height:34px}
+.stages{display:flex;gap:3px;margin:14px 0 4px}
+.stages button{flex:1;border:0;background:#e3e7de;height:30px;font-size:11.5px;font-weight:600;color:var(--mute);clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,8% 50%)}
+.stages button:first-child{clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%)}
+.stages button.on{background:var(--acc);color:#fff}
+.stages button.past{background:#b8c9b5;color:var(--acc)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:16px 0}
+.grid2 label{display:block;color:var(--mute);font-size:12px}
+.grid2 b{font-size:15px}
+.sec{font-weight:700;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:center}
+.note{display:flex;gap:8px;margin-bottom:12px}
+.note textarea{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 11px;resize:none;height:44px;background:#fff}
+.note select{border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 6px}
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:1px;background:var(--line)}
+.ev{position:relative;margin-bottom:14px}
+.ev::before{content:"";position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--paper);border:2px solid var(--acc)}
+.ev.new{animation:pop .5s}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}}
+.ev .m{color:var(--mute);font-size:12px}
+.acts{display:flex;gap:8px;padding:14px 22px;border-top:1px solid var(--line)}
+.acts .btn{flex:1}
+.won{background:var(--ok);color:#fff;border-color:var(--ok)}
+/* tables / other views */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel .tb{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.panel .tb input{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:600;color:var(--mute);font-size:12.5px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid #eceee7}
+tr:hover td{background:#f4f6f0}
+.chart{padding:18px}
+.chart svg{width:100%;height:auto;display:block}
+.tasks .t{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #eceee7}
+.tasks .t input{width:18px;height:18px;accent-color:var(--acc)}
+.tasks .t.done .lbl{text-decoration:line-through;color:var(--mute)}
+.tasks h4{padding:14px 16px 6px;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.tasks .lbl{flex:1}
+.view{display:none}.view.on{display:block}
+/* modal */
+.md{position:fixed;inset:0;background:#17201b66;z-index:40;display:none;place-items:center;padding:16px}
+.md.on{display:grid}
+.md form{background:var(--paper);border-radius:14px;padding:22px;width:min(460px,100%);display:grid;gap:12px}
+.md h2{font-size:22px}
+.md label{display:grid;gap:4px;font-size:12.5px;color:var(--mute)}
+.md input,.md select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;color:var(--ink);font-size:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;opacity:0;transition:.3s;z-index:50;font-weight:600}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.confetti{position:fixed;pointer-events:none;z-index:60;width:8px;height:8px;border-radius:2px}
+@media (max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:10px;gap:2px}.logo{margin:0 10px 0 4px;font-size:18px}.who{display:none}aside button{white-space:nowrap;padding:8px 10px}main{padding:16px}.kpis{grid-template-columns:1fr 1fr}.top h1{font-size:24px}.hide-m{display:none}.grid2{grid-template-columns:1fr 1fr}table .hm{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="logo"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#d6f06b"/><path d="M9 23 16 8l7 15M11.5 18h9" stroke="#1f4d3a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Filao</div>
+  <button class="on" data-v="pipe">Pipeline</button>
+  <button data-v="contacts">Contacts</button>
+  <button data-v="relances">Relances <b id="nbR">0</b></button>
+  <button data-v="prev">Prévisions</button>
+  <div class="who"><span class="av" style="background:#c0632b">AM</span><div>Awa Mbarga<br><span style="opacity:.6">Soleka Énergie</span></div></div>
+</aside>
+<main>
+  <div class="top"><h1 id="vt">Pipeline</h1><div class="r"><button class="btn hide-m" id="reset">Réinitialiser</button><button class="btn p" id="add">+ Nouvelle affaire</button></div></div>
+  <div class="kpis">
+    <div class="kpi"><span>Pipeline ouvert</span><b id="k1">—</b><small id="k1s"></small></div>
+    <div class="kpi"><span>Prévision pondérée</span><b id="k2">—</b><small>montant × probabilité</small></div>
+    <div class="kpi"><span>Taux de conversion</span><b id="k3">—</b><small id="k3s"></small></div>
+    <div class="kpi"><span>Relances en retard</span><b id="k4">—</b><small>à traiter en priorité</small></div>
+  </div>
+  <section class="view on" id="v-pipe"><div class="board" id="board"></div></section>
+  <section class="view" id="v-contacts"><div class="panel"><div class="tb"><input id="q" placeholder="Rechercher un contact, une entreprise, une ville…"></div><table><thead><tr><th data-k="nom">Contact</th><th data-k="co">Entreprise</th><th data-k="ville" class="hm">Ville</th><th data-k="tel" class="hm">Téléphone</th><th data-k="total">Affaires</th></tr></thead><tbody id="ct"></tbody></table></div></section>
+  <section class="view" id="v-relances"><div class="panel tasks" id="tasks"></div></section>
+  <section class="view" id="v-prev"><div class="panel chart"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><b style="font-size:16px">Chiffre d'affaires attendu par mois de signature</b><span class="mono" style="color:var(--mute)">■ signé &nbsp; ■ pondéré &nbsp; □ potentiel</span></div><div id="chart"></div></div></section>
+</main>
+</div>
+<div class="dr" id="dr"><div class="veil" id="veil"></div><div class="pan" id="pan"></div></div>
+<div class="md" id="md"><form id="nf"><h2>Nouvelle affaire</h2>
+  <label>Entreprise<input name="co" required placeholder="Ex. Boulangerie La Mie"></label>
+  <label>Objet<input name="ti" required placeholder="Ex. Kit solaire 3 kVA"></label>
+  <label>Contact<input name="nom" required placeholder="Prénom Nom"></label>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label>Montant (FCFA)<input name="amt" type="number" min="0" step="1000" required value="1500000"></label><label>Ville<select name="ville"><option>Yaoundé</option><option>Douala</option><option>Bafoussam</option><option>Kribi</option><option>Garoua</option></select></label></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="nfc">Annuler</button><button class="btn p">Créer l'affaire</button></div></form></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ST=[{k:'pro',n:'Prospect',p:.1},{k:'qua',n:'Qualifié',p:.3},{k:'dev',n:'Devis envoyé',p:.5},{k:'neg',n:'Négociation',p:.75},{k:'gag',n:'Gagné',p:1}];
+const OWN={AM:['Awa Mbarga','#c0632b'],JN:['Jules Ndzana','#3c6e9f'],SK:['Sali Kamga','#7a4fa0']};
+const fcfa=n=>Math.round(n).toLocaleString('fr-FR').replace(/ /g,' ')+' F';
+const court=n=>n>=1e6?(n/1e6).toLocaleString('fr-FR',{maximumFractionDigits:1})+' M':Math.round(n/1e3)+' k';
+const J=864e5,T0=new Date();T0.setHours(0,0,0,0);const d=n=>T0.getTime()+n*J;
+const fd=t=>{const n=Math.round((t-T0)/J);return n===0?"aujourd'hui":n===1?'demain':n===-1?'hier':n<0?`il y a ${-n} j`:`dans ${n} j`};
+const fdate=t=>new Date(t).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+function seed(){const S=[
+ ['Hôtel Les Cocotiers','Toiture solaire 30 kVA','Paul Etoundi','Kribi',38500000,'neg','AM',-1,['hôtellerie'],45],
+ ['Clinique Mfoundi','Onduleurs et batteries bloc op.','Dr Ngo Biyong','Yaoundé',21400000,'dev','JN',2,['santé'],30],
+ ['Boulangerie La Mie','Kit solaire 5 kVA','Ernest Fotso','Bafoussam',6900000,'qua','SK',0,['commerce'],20],
+ ['Lycée bilingue d\'Etoug-Ebe','Éclairage salles et forage','Mme Abena','Yaoundé',14200000,'pro','AM',4,['éducation'],60],
+ ['Ferme avicole Nkolo','Pompage solaire','Joseph Nkolo','Garoua',4800000,'qua','JN',-3,['agriculture'],25],
+ ['Cabinet Eyenga & Associés','Kit bureau 3 kVA','Me Eyenga','Douala',3600000,'neg','SK',1,['services'],12],
+ ['Supermarché Akwa Plus','Chambres froides solaires','Rita Tchamba','Douala',27800000,'dev','AM',-2,['commerce'],38],
+ ['Paroisse Saint-Joseph','Éclairage et sonorisation','Abbé Mvondo','Yaoundé',2900000,'pro','JN',6,['associatif'],50],
+ ['Station Total Mvan','Audit énergétique','Henri Bella','Yaoundé',1200000,'gag','SK',0,['énergie'],-6],
+ ['Imprimerie Lumière','Kit 8 kVA + maintenance','Brice Kouam','Douala',9800000,'gag','AM',0,['industrie'],-18],
+ ['Résidence Bastos','Lampadaires solaires (24)','Claire Owona','Yaoundé',11500000,'neg','JN',3,['immobilier'],22],
+ ['Pharmacie du Marché','Réfrigérateur vaccins solaire','Dr Fouda','Kribi',2300000,'pro','SK',-1,['santé'],40],
+ ['École Les Petits Génies','Kit 2 kVA','M. Tabi','Bafoussam',1900000,'qua','AM',5,['éducation'],35],
+];
+ const deals=S.map((s,i)=>({id:'D'+(101+i),co:s[0],ti:s[1],nom:s[2],ville:s[3],amt:s[4],st:s[5],own:s[6],next:d(s[7]),tags:s[8],close:d(s[9]),tel:'+237 6'+(70+i*2)+' '+(10+i*7)%90+' '+(23+i*5)%90+' '+(40+i*3)%90,
+  ev:[{t:d(-12-i%5),k:'Appel',x:'Premier contact, besoin identifié.'},{t:d(-4-i%3),k:'Visite',x:'Relevé sur site et photos de la toiture.'}]}));
+ deals.forEach(x=>{if(x.st==='gag'){x.ev.push({t:x.close,k:'Gagné',x:'Bon de commande signé.'})}});
+ return {deals,lost:1,tasksDone:[]};
+}
+let S;try{S=JSON.parse(localStorage.getItem('filao'))}catch(e){}if(!S||!S.deals)S=seed();
+const save=()=>{try{localStorage.setItem('filao',JSON.stringify(S))}catch(e){}};
+const stI=k=>ST.findIndex(s=>s.k===k);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),2200)}
+function kpis(){const open=S.deals.filter(x=>x.st!=='gag'),won=S.deals.filter(x=>x.st==='gag');
+ $('#k1').textContent=court(open.reduce((a,x)=>a+x.amt,0))+' FCFA';$('#k1s').textContent=open.length+' affaires en cours';
+ $('#k2').textContent=court(open.reduce((a,x)=>a+x.amt*ST[stI(x.st)].p,0))+' FCFA';
+ $('#k3').textContent=Math.round(won.length/(won.length+S.lost)*100)+' %';$('#k3s').textContent=`${won.length} gagnées, ${S.lost} perdue${S.lost>1?'s':''}`;
+ const late=open.filter(x=>x.next<T0.getTime()).length;$('#k4').textContent=late;$('#k4').style.color=late?'var(--warn)':'';$('#nbR').textContent=open.filter(x=>x.next<=T0.getTime()).length}
+function cardHTML(x){const n=Math.round((x.next-T0)/J),cl=x.st==='gag'?'':n<0?'late':n===0?'today':'';
+ return `<div class="card" draggable="true" data-id="${x.id}"><span class="av" style="background:${OWN[x.own][1]}">${x.own}</span><div class="co">${x.co}</div><div class="ti">${x.ti}</div><div class="tags">${x.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="ft"><span class="amt">${fcfa(x.amt)}</span>${x.st==='gag'?'<span class="due" style="background:#dcefd9;color:var(--ok)">signé</span>':`<span class="due ${cl}">${fd(x.next)}</span>`}</div></div>`}
+function board(){const max=Math.max(...ST.map(s=>S.deals.filter(x=>x.st===s.k).reduce((a,x)=>a+x.amt,0)));
+ $('#board').innerHTML=ST.map(s=>{const L=S.deals.filter(x=>x.st===s.k).sort((a,b)=>a.next-b.next),t=L.reduce((a,x)=>a+x.amt,0);
+  return `<div class="col" data-st="${s.k}"><h3>${s.n} <i>${L.length}</i></h3><div class="sum mono">${fcfa(t)} · ${Math.round(s.p*100)} %</div><div class="bar"><u style="width:${t/max*100}%"></u></div>${L.map(cardHTML).join('')}</div>`}).join('');kpis()}
+// glisser-déposer
+let dragId=null;
+$('#board').addEventListener('dragstart',e=>{const c=e.target.closest('.card');if(!c)return;dragId=c.dataset.id;c.classList.add('drag');e.dataTransfer.effectAllowed='move'});
+$('#board').addEventListener('dragend',()=>{$$('.card.drag').forEach(c=>c.classList.remove('drag'));$$('.col.over').forEach(c=>c.classList.remove('over'))});
+$('#board').addEventListener('dragover',e=>{const c=e.target.closest('.col');if(!c)return;e.preventDefault();$$('.col.over').forEach(x=>x!==c&&x.classList.remove('over'));c.classList.add('over')});
+$('#board').addEventListener('drop',e=>{const c=e.target.closest('.col');if(!c||!dragId)return;e.preventDefault();move(dragId,c.dataset.st);dragId=null});
+$('#board').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openDeal(c.dataset.id)});
+function move(id,st,anim){const x=S.deals.find(y=>y.id===id);if(!x||x.st===st)return;const from=x.st;x.st=st;
+ x.ev.push({t:Date.now(),k:'Étape',x:`${ST[stI(from)].n} → ${ST[stI(st)].n}`});if(st==='gag'){x.close=T0.getTime();confetti();toast(`Affaire gagnée : ${x.co}`)}else toast(`${x.co} → ${ST[stI(st)].n}`);
+ save();board();if(relOn())tasks();const el=$(`.card[data-id="${id}"]`);if(el){el.animate([{transform:'scale(.92)',boxShadow:'0 0 0 3px #d6f06b'},{transform:'none',boxShadow:'0 0 0 0 #d6f06b'}],{duration:600,easing:'cubic-bezier(.2,.8,.2,1)'})}}
+// démonstration : déplacement animé d'une carte (utilisé par le spot)
+window.__glisse=async(id,st)=>{const c=$(`.card[data-id="${id}"]`),col=$(`.col[data-st="${st}"]`);if(!c||!col)return;const a=c.getBoundingClientRect(),b=col.getBoundingClientRect();
+ const g=c.cloneNode(true);Object.assign(g.style,{position:'fixed',left:a.left+'px',top:a.top+'px',width:a.width+'px',margin:0,zIndex:70,boxShadow:'0 18px 40px -12px rgba(0,0,0,.4)',transition:'all .9s cubic-bezier(.5,0,.2,1)',transform:'rotate(-2deg)'});
+ document.body.append(g);c.classList.add('drag');col.classList.add('over');await new Promise(r=>setTimeout(r,60));g.style.left=b.left+10+'px';g.style.top=b.top+70+'px';await new Promise(r=>setTimeout(r,950));g.remove();col.classList.remove('over');move(id,st)};
+function confetti(){const C=['#d6f06b','#1f4d3a','#c0632b','#3c6e9f'];for(let i=0;i<60;i++){const e=document.createElement('i');e.className='confetti';e.style.background=C[i%4];e.style.left=50+'%';e.style.top='40%';document.body.append(e);
+ const a=Math.random()*Math.PI*2,v=150+Math.random()*260;e.animate([{transform:'translate(0,0) rotate(0)'},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v+300}px) rotate(${Math.random()*720}deg)`,opacity:0}],{duration:1300+Math.random()*600,easing:'cubic-bezier(.1,.7,.3,1)'}).onfinish=()=>e.remove()}}
+// fiche affaire
+let curId=null;
+function openDeal(id){curId=id;const x=S.deals.find(y=>y.id===id),i=stI(x.st);
+ $('#pan').innerHTML=`<button class="x" id="cx" aria-label="Fermer">✕</button><div class="hd"><span class="mono" style="color:var(--mute)">${x.id} · ${x.tags.join(', ')}</span><h2>${x.co}</h2><div style="color:var(--mute)">${x.ti}</div>
+ <div class="stages">${ST.map((s,j)=>`<button data-s="${s.k}" class="${j===i?'on':j<i?'past':''}">${s.n}</button>`).join('')}</div></div>
+ <div class="bd"><div class="grid2"><div><label>Montant</label><b>${fcfa(x.amt)}</b></div><div><label>Probabilité</label><b>${Math.round(ST[i].p*100)} %</b></div><div><label>Contact</label><b>${x.nom}</b><div class="mono" style="color:var(--mute)">${x.tel}</div></div><div><label>Responsable</label><b>${OWN[x.own][0]}</b></div><div><label>Prochaine action</label><b>${x.st==='gag'?'—':fdate(x.next)+' ('+fd(x.next)+')'}</b></div><div><label>Signature prévue</label><b>${fdate(x.close)}</b></div></div>
+ <div class="sec">Historique <span class="mono" style="color:var(--mute);font-weight:400">${x.ev.length} échanges</span></div>
+ <div class="note"><select id="nk"><option>Note</option><option>Appel</option><option>E-mail</option><option>Visite</option></select><textarea id="nt" placeholder="Ajouter un compte rendu…"></textarea><button class="btn p" id="nb">Ajouter</button></div>
+ <div class="tl" id="tl">${[...x.ev].reverse().map(e=>`<div class="ev"><b>${e.k}</b> · <span class="m">${fdate(e.t)}</span><div>${e.x}</div></div>`).join('')}</div></div>
+ <div class="acts">${x.st==='gag'?'<button class="btn" id="cx2">Fermer</button>':'<button class="btn" id="rel">Relancer dans 3 j</button><button class="btn" id="lost">Perdue</button><button class="btn won" id="win">Gagnée</button>'}</div>`;
+ $('#dr').classList.add('on');$('#cx').onclick=closeDeal;if($('#cx2'))$('#cx2').onclick=closeDeal;
+ $$('.stages button').forEach(b=>b.onclick=()=>{move(x.id,b.dataset.s);openDeal(x.id)});
+ $('#nb').onclick=()=>{const v=$('#nt').value.trim();if(!v)return;x.ev.push({t:Date.now(),k:$('#nk').value,x:v.replace(/</g,'&lt;')});save();openDeal(x.id);$('#tl .ev').classList.add('new')};
+ if($('#win')){$('#win').onclick=()=>{move(x.id,'gag');openDeal(x.id)};$('#lost').onclick=()=>{S.deals=S.deals.filter(y=>y!==x);S.lost++;save();board();closeDeal();toast('Affaire classée perdue')};
+ $('#rel').onclick=()=>{x.next=d(3);x.ev.push({t:Date.now(),k:'Relance',x:'Relance planifiée dans 3 jours.'});save();board();openDeal(x.id);toast('Relance planifiée')}}}
+function closeDeal(){$('#dr').classList.remove('on');curId=null}
+$('#veil').onclick=closeDeal;addEventListener('keydown',e=>{if(e.key==='Escape'){closeDeal();$('#md').classList.remove('on')}});
+// contacts
+let sortK='co',sortD=1;
+function contacts(){const q=$('#q').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+ const R=S.deals.map(x=>({nom:x.nom,co:x.co,ville:x.ville,tel:x.tel,total:x.amt,id:x.id,own:x.own})).filter(r=>(r.nom+r.co+r.ville).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(q));
+ R.sort((a,b)=>(a[sortK]>b[sortK]?1:-1)*sortD);
+ $('#ct').innerHTML=R.map(r=>`<tr data-id="${r.id}" style="cursor:pointer"><td><span style="display:flex;gap:9px;align-items:center"><span class="av" style="background:${OWN[r.own][1]};width:26px;height:26px">${r.nom.split(' ').map(w=>w[0]).slice(-2).join('')}</span><b>${r.nom}</b></span></td><td>${r.co}</td><td class="hm">${r.ville}</td><td class="hm mono">${r.tel}</td><td><b>${fcfa(r.total)}</b></td></tr>`).join('')||'<tr><td colspan="5" style="color:var(--mute)">Aucun contact ne correspond.</td></tr>'}
+$('#q').oninput=contacts;$$('th').forEach(h=>h.onclick=()=>{sortD=sortK===h.dataset.k?-sortD:1;sortK=h.dataset.k;contacts()});
+$('#ct').onclick=e=>{const r=e.target.closest('tr[data-id]');if(r)openDeal(r.dataset.id)};
+// relances
+const relOn=()=>$('#v-relances').classList.contains('on');
+function tasks(){const open=S.deals.filter(x=>x.st!=='gag').sort((a,b)=>a.next-b.next),t=T0.getTime();
+ const grp=[['En retard',open.filter(x=>x.next<t)],["Aujourd'hui",open.filter(x=>x.next===t)],['Cette semaine',open.filter(x=>x.next>t&&x.next<=t+7*J)],['Plus tard',open.filter(x=>x.next>t+7*J)]];
+ $('#tasks').innerHTML=grp.filter(g=>g[1].length).map(([n,L])=>`<h4>${n}</h4>`+L.map(x=>`<div class="t" data-id="${x.id}"><input type="checkbox" aria-label="Fait"><span class="lbl"><b>${x.co}</b> — relancer ${x.nom} · ${x.ti}</span><span class="due ${x.next<t?'late':x.next===t?'today':''}">${fdate(x.next)}</span><span class="av" style="background:${OWN[x.own][1]};width:24px;height:24px;font-size:10px">${x.own}</span></div>`).join('')).join('')}
+$('#tasks').onchange=e=>{const r=e.target.closest('.t');const x=S.deals.find(y=>y.id===r.dataset.id);r.classList.add('done');setTimeout(()=>{x.next=d(7);x.ev.push({t:Date.now(),k:'Relance',x:'Relance effectuée, prochaine dans 7 jours.'});save();tasks();kpis();toast('Relance faite, prochaine dans 7 jours')},600)};
+// prévisions
+function chart(){const M=[];for(let i=-1;i<5;i++){const m=new Date(T0.getFullYear(),T0.getMonth()+i,1);M.push({m,won:0,w:0,pot:0})}
+ S.deals.forEach(x=>{const c=new Date(x.close),k=M.find(o=>o.m.getMonth()===c.getMonth()&&o.m.getFullYear()===c.getFullYear());if(!k)return;if(x.st==='gag')k.won+=x.amt;else{k.w+=x.amt*ST[stI(x.st)].p;k.pot+=x.amt}});
+ const W=880,H=320,pl=56,pb=34,max=Math.max(...M.map(o=>o.won+o.pot))*1.1||1,bw=(W-pl)/M.length,y=v=>H-pb-(v/max)*(H-pb-14);
+ let g='';for(let i=0;i<=4;i++){const v=max/4*i;g+=`<line x1="${pl}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#e3e7de"/><text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#6b746d" font-family="IBM Plex Mono">${court(v)}</text>`}
+ M.forEach((o,i)=>{const x=pl+i*bw+bw*.22,w=bw*.56;
+  g+=`<g class="b"><rect x="${x}" y="${y(o.won+o.pot)}" width="${w}" height="${Math.max(0,y(o.won)-y(o.won+o.pot))}" fill="none" stroke="#9aa79c" stroke-dasharray="3 3" rx="4"/>
+  <rect x="${x}" y="${y(o.won+o.w)}" width="${w}" height="${Math.max(0,y(o.won)-y(o.won+o.w)-(o.won?2:0))}" fill="#9fc28f" rx="4"/>
+  <rect x="${x}" y="${y(o.won)}" width="${w}" height="${H-pb-y(o.won)}" fill="#1f4d3a" rx="4"/>
+  <text x="${x+w/2}" y="${H-12}" text-anchor="middle" font-size="12" fill="#17201b">${o.m.toLocaleDateString('fr-FR',{month:'short'})}</text>
+  <text x="${x+w/2}" y="${y(o.won+o.w)-7}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#17201b">${o.won+o.w?court(o.won+o.w):''}</text>
+  <rect x="${pl+i*bw}" y="0" width="${bw}" height="${H-pb}" fill="transparent"><title>${o.m.toLocaleDateString('fr-FR',{month:'long'})} — signé ${fcfa(o.won)}, pondéré ${fcfa(o.w)}, potentiel ${fcfa(o.pot)}</title></rect></g>`});
+ $('#chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Prévisions par mois">${g}<line x1="${pl}" x2="${W}" y1="${H-pb}" y2="${H-pb}" stroke="#17201b"/></svg>
+ <table style="margin-top:14px"><thead><tr><th>Mois</th><th>Signé</th><th>Pondéré</th><th class="hm">Potentiel</th></tr></thead><tbody>${M.map(o=>`<tr><td>${o.m.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</td><td>${fcfa(o.won)}</td><td>${fcfa(o.w)}</td><td class="hm">${fcfa(o.pot)}</td></tr>`).join('')}</tbody></table>`}
+// navigation
+const TT={pipe:'Pipeline',contacts:'Contacts',relances:'Relances',prev:'Prévisions'};
+function view(v){$$('aside button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$('#vt').textContent=TT[v];
+ if(v==='contacts')contacts();if(v==='relances')tasks();if(v==='prev')chart()}
+$$('aside button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));window.__vue=view;
+$('#add').onclick=()=>{$('#md').classList.add('on');$('#nf [name=co]').focus()};$('#nfc').onclick=()=>$('#md').classList.remove('on');
+$('#nf').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),n=Math.max(...S.deals.map(x=>+x.id.slice(1)))+1;
+ S.deals.push({id:'D'+n,co:f.get('co'),ti:f.get('ti'),nom:f.get('nom'),ville:f.get('ville'),amt:+f.get('amt'),st:'pro',own:'AM',next:d(1),close:d(45),tags:['nouveau'],tel:'+237 6·· ·· ·· ··',ev:[{t:Date.now(),k:'Création',x:'Affaire créée.'}]});
+ save();board();e.target.reset();$('#md').classList.remove('on');view('pipe');toast('Affaire créée dans « Prospect »')};
+$('#reset').onclick=()=>{S=seed();save();board();view('pipe');toast('Données de démonstration restaurées')};
+board();
+</script>
+</body>
+</html>

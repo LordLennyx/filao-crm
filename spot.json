@@ -1,0 +1,74 @@
+{
+ "titre": "<em>Filao</em>, CRM commercial",
+ "type": "CRM · pipeline de ventes",
+ "sous_titre": "Pipeline par glisser-déposer, historique, relances, prévisions",
+ "couleur": "#1f4d3a",
+ "graine": 21,
+ "voix": [
+  [
+   3.3,
+   "Filao, un CRM pensé pour les équipes commerciales des PME,"
+  ],
+  [
+   8.6,
+   "les affaires glissent d'une étape à l'autre, chaque échange est consigné,"
+  ],
+  [
+   16.6,
+   "les relances arrivent à l'heure, et les prévisions se mettent à jour toutes seules."
+  ]
+ ],
+ "etapes": [
+  {
+   "t": "wait",
+   "ms": 400
+  },
+  {
+   "t": "eval",
+   "js": "window.__glisse('D106','gag')",
+   "pause": 2200
+  },
+  {
+   "t": "eval",
+   "js": "window.__glisse('D103','dev')",
+   "pause": 1300
+  },
+  {
+   "t": "click",
+   "sel": ".card[data-id='D101']",
+   "pause": 800
+  },
+  {
+   "t": "type",
+   "sel": "#nt",
+   "text": "Appel avec M. Etoundi : accord sur 30 kVA, devis révisé demain.",
+   "delay": 12,
+   "pause": 300
+  },
+  {
+   "t": "click",
+   "sel": "#nb",
+   "pause": 1100
+  },
+  {
+   "t": "click",
+   "sel": "#cx",
+   "pause": 700
+  },
+  {
+   "t": "click",
+   "sel": "aside button[data-v=relances]",
+   "pause": 1400
+  },
+  {
+   "t": "click",
+   "sel": "#tasks .t input",
+   "pause": 1100
+  },
+  {
+   "t": "click",
+   "sel": "aside button[data-v=prev]",
+   "pause": 2300
+  }
+ ]
+}
